@@ -1,0 +1,31 @@
+# Run this using
+# λ kubectl apply -f roles/dashboard-admin-user.yml
+
+# to get the bearer token we can use to log into our dashboard use
+# this list the secret we pull from thr admin-user role with awk 
+# λ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+
+# to get all cluster roles
+# λ kubectl get clusterroles
+
+# This says bind the newly created service account in the namespace kube-system
+# to the cluster role of cluster-admin which should have been set up by kubeadm by default
+# see https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole 
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kube-system

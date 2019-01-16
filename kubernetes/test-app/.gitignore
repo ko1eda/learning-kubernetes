@@ -1,0 +1,2 @@
+#ignore any file with secret in it 
+/secrets

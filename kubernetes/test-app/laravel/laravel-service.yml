@@ -1,0 +1,24 @@
+# Note that services should be created before deployments
+# so that the nodes in the deployment can be properly loadbalanced by the service
+# https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/#accessing-the-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: laravel-service
+  namespace: test
+  labels:
+    app: test-app # so we can easily delete this along witht the deployment using kubectl delete deployment,svc -n test -l app=test-app
+spec:
+  type: NodePort
+  # port ist the port that the service is trying to connect to on the containers in the pod
+  # targetPort is the port the service is exposing 
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 80
+    protocol: TCP
+  externalIPs: 
+    - 157.230.61.23
+  selector:
+    app: test-app
+    environment: development
