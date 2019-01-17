@@ -49,6 +49,6 @@ spec:
             - containerPort: 9000
           # pull all laravel environement variables in 
           # https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables
-          envFrom:
-            - configMapRef:
-                name: laravel-env
+          # envFrom:
+          #   - configMapRef:
+          #       name: laravel-env

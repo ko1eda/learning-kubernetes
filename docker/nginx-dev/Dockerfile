@@ -1,0 +1,28 @@
+FROM nginx:1.14.1-alpine
+
+LABEL author="Christopher Koleda" version="1.0.0"
+
+ADD ./docker/nginx/nginx.conf /etc/nginx/
+ADD ./docker/nginx/laravel.conf /etc/nginx/sites-enabled/default
+
+RUN apk update \
+    && apk upgrade \
+    && apk add --no-cache bash \
+    && adduser -D -H -u 1001 -g 1001 -s /bin/bash www-data
+
+ARG PHP_UPSTREAM_CONTAINER=php-fpm
+ARG PHP_UPSTREAM_PORT=9000
+
+# Set upstream conf and remove the default conf
+RUN echo "upstream php-upstream { server ${PHP_UPSTREAM_CONTAINER}:${PHP_UPSTREAM_PORT}; }" > /etc/nginx/conf.d/upstream.conf \
+    && rm /etc/nginx/conf.d/default.conf
+
+WORKDIR /var/www/html
+
+COPY ./test-app /var/www/html
+
+RUN chown -R www-data: /var/www && chmod -R 770 /var/www
+
+EXPOSE 80 443
+
+CMD nginx
