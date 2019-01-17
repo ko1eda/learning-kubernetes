@@ -35,13 +35,13 @@ spec:
       imagePullSecrets:
         - name: gitlab-registry-key
       containers:
-        - image: registry.gitlab.com/koleda/test-kube-deploy/nginx:1.0.1
+        - image: registry.gitlab.com/koleda/test-kube-deploy/nginx:1.0.0
           name: nginx
           imagePullPolicy: Always
           #open port 80 on the container for traffic
           ports:
             - containerPort: 8000
-        - image: registry.gitlab.com/koleda/test-kube-deploy/php-fpm:1.0.1
+        - image: registry.gitlab.com/koleda/test-kube-deploy/php-fpm:1.0.0
           name: php-fpm
           # always pull new images even if the image already exists https://kubernetes.io/docs/concepts/containers/images/#updating-images
           imagePullPolicy: Always

@@ -2,20 +2,15 @@ FROM nginx:1.14.1-alpine
 
 LABEL author="Christopher Koleda" version="1.0.0"
 
-# RUN apk update && \
-#     mkdir -p /var/www/data && \
-#     addgroup -g 1001 -S www-data && \
-#     adduser -u 1001 -S www-data -G www-data
-
-ADD ./nginx/nginx.conf /etc/nginx/
-ADD ./nginx/laravel.conf /etc/nginx/sites-enabled/default
+ADD ./docker/nginx/nginx.conf /etc/nginx/
+ADD ./docker/nginx/laravel.conf /etc/nginx/sites-enabled/default
 
 RUN apk update \
     && apk upgrade \
     && apk add --no-cache bash \
-    && adduser -D -H -u 1001 -s /bin/bash www-data
+    && adduser -D -H -u 1001 -g 1001 -s /bin/bash www-data
 
-ARG PHP_UPSTREAM_CONTAINER=127.0.0.1
+ARG PHP_UPSTREAM_CONTAINER
 ARG PHP_UPSTREAM_PORT=9000
 
 # Set upstream conf and remove the default conf

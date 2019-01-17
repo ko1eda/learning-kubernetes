@@ -4,24 +4,26 @@ version : '3'
 services : 
   nginx:
     build: 
-      context: ./
-      dockerfile: ./docker/nginx/DockerFile
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+      args:
+        PHP_UPSTREAM_CONTAINER: 127.0.0.1
     image: registry.gitlab.com/koleda/test-kube-deploy/nginx:1.0.0
 
   php-fpm:
     build:
-      context: ./
-      dockerfile: ./docker/php-fpm/DockerFile
+      context: .
+      dockerfile: ./docker/php-fpm/Dockerfile
     image: registry.gitlab.com/koleda/test-kube-deploy/php-fpm:1.0.0
   
   queue-worker:
     build:
-      context: ./
-      dockerfile: ./docker/queue-worker/DockerFile
+      context: .
+      dockerfile: ./docker/queue-worker/Dockerfile
     image: registry.gitlab.com/koleda/test-kube-deploy/queue-worker:1.0.0
 
   mysql:
     build:
-      context: ./
-      dockerfile: ./docker/mysql/DockerFile
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
     image: registry.gitlab.com/koleda/test-kube-deploy/mysql:1.0.0

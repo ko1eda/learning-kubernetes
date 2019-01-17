@@ -30,8 +30,8 @@ RUN apt-get update && \
   
 
 # add updated config files to the container
-ADD ./php/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
-ADD ./php/www.conf /etc/php/7.2/fpm/pool.d/www.conf
+ADD ./docker/php-fpm/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
+ADD ./docker/php-fpm/www.conf /etc/php/7.2/fpm/pool.d/www.conf
 
 WORKDIR /var/www/html
 
