@@ -19,7 +19,7 @@ RUN echo "upstream php-upstream { server ${PHP_UPSTREAM_CONTAINER}:${PHP_UPSTREA
 
 WORKDIR /var/www/html
 
-COPY ./test-app /var/www/html
+# COPY ./test-app /var/www/html
 
 RUN chown -R www-data: /var/www && chmod -R 770 /var/www
 

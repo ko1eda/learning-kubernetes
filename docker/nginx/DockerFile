@@ -10,7 +10,7 @@ RUN apk update \
     && apk add --no-cache bash \
     && adduser -D -H -u 1001 -g 1001 -s /bin/bash www-data
 
-ARG PHP_UPSTREAM_CONTAINER
+ARG PHP_UPSTREAM_CONTAINER=127.0.0.1
 ARG PHP_UPSTREAM_PORT=9000
 
 # Set upstream conf and remove the default conf

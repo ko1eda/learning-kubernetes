@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+# note presistent volume claims can belong to a namespace
+# but the volumes themselves are namespace agnosting just like nodes, they exist on the cluster
+# as a commidity to be consumed
+metadata:
+  name: csi-pvc
+  namespace: test 
+spec:
+  # the volume can only be used by a single node readwriteonce
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: do-block-storage
