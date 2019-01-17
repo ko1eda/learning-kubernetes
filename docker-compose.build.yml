@@ -3,18 +3,16 @@ version : '3'
 # build contetxt https://stackoverflow.com/questions/50948581/access-to-outside-of-context-in-dockerfile
 services : 
   nginx:
-    build: 
+    build:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
-      args:
-        PHP_UPSTREAM_CONTAINER: 127.0.0.1
-    image: registry.gitlab.com/koleda/test-kube-deploy/nginx:1.0.0
+    image: registry.gitlab.com/koleda/test-kube-deploy/nginx:1.0.1
 
   php-fpm:
     build:
       context: .
       dockerfile: ./docker/php-fpm/Dockerfile
-    image: registry.gitlab.com/koleda/test-kube-deploy/php-fpm:1.0.0
+    image: registry.gitlab.com/koleda/test-kube-deploy/php-fpm:1.0.1
   
   queue-worker:
     build:

@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: laravel-deployment-dev # each pod will be named this plus a hash
+  namespace: test
+  labels:
+    app: test-app
+    environment: development
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: test-app
+      environment: development
+  template:
+    metadata:
+      labels:
+        app: test-app
+        environment: development
+    spec:
+      volumes: # create a hostPath volume to mount the shared app directory
+        - name: app-mount
+          hostPath:
+            # directory location on host
+            path: /c/Users/koled/Desktop/webdev/playground/kubernetes-test/test-app/
+            # this field is optional
+            type: Directory
+      containers:
+        - image: registry.gitlab.com/koleda/test-kube-deploy/nginx-dev:1.0.2
+          imagePullPolicy: Never
+          name: nginx
+          ports:
+          - containerPort: 80
+          volumeMounts:
+          - mountPath: /var/www/html
+            name: app-mount
+        - image: registry.gitlab.com/koleda/test-kube-deploy/php-fpm-dev:1.0.2
+          name: php-fpm
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 9000
+          volumeMounts:
+          - mountPath: /var/www/html
+            name: app-mount

@@ -17,8 +17,6 @@ spec:
     protocol: TCP
     targetPort: 80
     protocol: TCP
-  externalIPs: 
-    - 157.230.61.23
   selector:
     app: test-app
     environment: development

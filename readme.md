@@ -81,6 +81,11 @@ NOTE: apiVersion of ClusterRoleBinding resource may differ between Kubernetes ve
 + https://stackoverflow.com/questions/50007654/how-does-kube-apiserver-restart-after-editing-etc-kubernetes-manifests-kube-api
 
 
+## Useful info about volumes
+To restrict and control the permissions for volumes as well as control the PID of a running contianer you can use securityContext objects
++ fsgroups work on volume perissions and runAsUser controls the PID of the running containers
+    + https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+    + https://stackoverflow.com/questions/43544370/kubernetes-how-to-set-volumemount-user-group-and-file-permissions
 
 ## Kube deployments READ ALL OF THIS [link](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 ## Secrets
@@ -94,6 +99,7 @@ NOTE: apiVersion of ClusterRoleBinding resource may differ between Kubernetes ve
 
 > Solution: The error was occuring because I had created the secret in the default namespace, but the service (the deployment) was trying to access the secret from the test namespace, by moving the secret to the test namespace it was able to access it https://stackoverflow.com/questions/46297949/kubernetes-sharing-secret-across-namespaces
 + Note: You can attach a secret to a service so that any pods that are mapped to that service can use those secrets without havint oe xplicitly define them see 
+
 
 
 ## Using init containers to clone from gitlab/github
@@ -118,6 +124,14 @@ kubectl --server=<ip-of-master-node> get nodes
 ```
 
 > Troubleshooting pods https://kubernetes.io/docs/tasks/debug-application-cluster/debug-pod-replication-controller/
+
+
+
+## Setting up kubernetes for docker
++ exposing a service on localhost https://medium.com/@lizrice/accessing-an-application-on-kubernetes-in-docker-1054d46b64b1
++ setting up dashboard https://medium.com/slalom-technology/get-kubernetes-running-locally-on-osx-and-windows-b3b5f176b5bb
++ To access a service on your local host you would enter the command below, this will direct all traffic to the correct internal service and port
+``` localhost:<node-port> ```
 
 
 ## Other useful info

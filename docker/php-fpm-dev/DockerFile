@@ -35,10 +35,6 @@ ADD ./docker/php-fpm/www.conf /etc/php/7.2/fpm/pool.d/www.conf
 
 WORKDIR /var/www/html
 
-# COPY ./test-app /var/www/html
-
-# RUN chown -R www-data: /var/www && chmod -R 770 /var/www
-
 EXPOSE 9000
 
 CMD php-fpm7.2  
