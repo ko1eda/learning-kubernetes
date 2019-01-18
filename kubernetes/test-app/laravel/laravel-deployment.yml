@@ -6,7 +6,7 @@ metadata:
   namespace: test
   labels:
     app: test-app
-    environment: development
+    environment: production
 spec:
   replicas: 2
   revisionHistoryLimit: 5
@@ -14,14 +14,14 @@ spec:
     # these are the labels that a service will match when directing traffic to these pods
     matchLabels:
       app: test-app
-      environment: development
+      environment: production
   # the pod template
   template:
     metadata:
       # all pods created from this deployment will have these labels
       labels:
         app: test-app
-        environment: development
+        environment: production
     spec:
       imagePullSecrets:
       - name: gitlab-registry-key
@@ -39,6 +39,6 @@ spec:
           - containerPort: 9000
         # pull all laravel environement variables in 
         # https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-container-environment-variables
-        envFrom:
-        - configMapRef:
-            name: laravel-env
+        # envFrom:
+        # - configMapRef:
+        #     name: laravel-env
