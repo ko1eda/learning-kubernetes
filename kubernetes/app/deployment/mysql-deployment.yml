@@ -1,63 +1,51 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: mysql-deployment
-  namespace: {{NAMESPACE}}
-  # these are the labels for the deployment itself, so I could say find all deployments for app in (test-app, development)
   labels:
-    app: mysql
     environment: production
+  name: mysql
+  namespace: {{NAMESPACE}}
 spec:
   replicas: 1
-  # The number of old deployments to roll back to 
   revisionHistoryLimit: 5
   selector:
-    # these are the labels that a service will match when directing traffic to these pods
     matchLabels:
-      app: mysql 
+      app: mysql
       environment: production
-  # the pod template
   template:
     metadata:
-      # all pods created from this deployment will have these labels
       labels:
         app: mysql
         environment: production
     spec:
-      imagePullSecrets:
-        - name: gitlab-registry-key
       containers:
-      - image: registry.gitlab.com/koleda/test-kube-deploy/mysql:1.0.2
-        name: mysql
+      - image: registry.gitlab.com/koleda/test-kube-deploy/mysql:1.0.3
         imagePullPolicy: Always
+        name: mysql
         ports:
         - containerPort: 3306
-        - containerPort: 33060 # to connect w/heidi
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: 3306
-        # Pull the environment variables for the container from our mysql-credentials
+          protocol: TCP
         env:
-        - name: MYSQL_ROOT_PASSWORD
+        - name: "MYSQL_ROOT_PASSWORD"
           valueFrom:
             secretKeyRef:
-              name: mysql-credentials
-              key: rootpw
-        - name: MYSQL_USER
-          valueFrom: 
+              name: mysql-secret
+              key: mysql_root_password
+        - name: "MYSQL_USER"
+          valueFrom:
             secretKeyRef:
-              name: mysql-credentials
-              key: username
-        - name: MYSQL_PASSWORD
-          valueFrom: 
+              name: mysql-secret
+              key: mysql_user
+        - name: "MYSQL_DATABASE"
+          valueFrom:
             secretKeyRef:
-              name: mysql-credentials
-              key: pw
-        - name: MYSQL_DATABASE
-          valueFrom: 
+              name: mysql-secret
+              key: mysql_database
+        - name: "MYSQL_PASSWORD"
+          valueFrom:
             secretKeyRef:
-              name: mysql-credentials
-              key: database
+              name: mysql-secret
+              key: mysql_password
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
@@ -66,5 +54,4 @@ spec:
         emptyDir: {}
         persistentVolumeClaim:
           claimName: 50gi-do-pvc
-    # - another volume to be shared with a container that backs up the database
      

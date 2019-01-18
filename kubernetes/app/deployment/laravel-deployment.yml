@@ -2,23 +2,19 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: laravel-deployment # each pod will be named this plus a hash
-  namespace: {{NAMESPACE}}
   labels:
-    app: laravel
     environment: production
+  name: laravel # each pod will be named this plus a hash
+  namespace: {{NAMESPACE}}
 spec:
-  replicas: 2
+  replicas: 3
   revisionHistoryLimit: 5
   selector:
-    # these are the labels that a service will match when directing traffic to these pods
     matchLabels:
       app: laravel
       environment: production
-  # the pod template
   template:
     metadata:
-      # all pods created from this deployment will have these labels
       labels:
         app: laravel
         environment: production
@@ -31,7 +27,7 @@ spec:
         imagePullPolicy: Always
         #open port 80 on the container for traffic
         ports:
-          - containerPort: 80
+         - containerPort: 80
       - image: registry.gitlab.com/koleda/test-kube-deploy/php-fpm:1.0.2
         name: php-fpm
         imagePullPolicy: Always
