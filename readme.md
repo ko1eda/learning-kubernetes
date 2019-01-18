@@ -105,12 +105,22 @@ To restrict and control the permissions for volumes as well as control the PID o
 
 
 
-## Using init containers to clone from gitlab/github
-### USE GIT-SYNC ( the docs are awful )
-+ https://github.com/kubernetes/git-sync/blob/master/docs/ssh.md
-+ https://github.com/kubernetes/git-sync/tree/master/demo
-+ https://stackoverflow.com/questions/53683594/how-to-clone-a-private-git-repository-into-a-kubernetes-pod-using-ssh-keys-in-se
-+ https://github.com/kubernetes/git-sync/releases
+
+## DNS and Kubernetes
++ https://www.digitalocean.com/community/tutorials/an-introduction-to-the-kubernetes-dns-service
++ https://coredns.io/2018/01/29/deploying-kubernetes-with-coredns-using-kubeadm/
++ troubleshooting dns https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/
+
+
+
+
+## Setting up mysql with laravel 
+There seems to be an issue with the default container not allowing connections for the IP's of the node by defaut
+to change this I think you could allow connections from laravel-svc (and it should resolve to the IP address of the correct pods)
+```
+SQLSTATE[HY000] [1045] Access denied for user 'test_user'@'10.244.1.175' (using password: YES) (SQL: select * from `users`)
+```
++ https://stackoverflow.com/questions/45650044/cant-connect-to-mysql-pod-in-kubernetes-when-using-secrets-for-password-access
 
 
 ## Safely shutting down kube master

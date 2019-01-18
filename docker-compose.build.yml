@@ -3,25 +3,25 @@ version : '3'
 # build contetxt https://stackoverflow.com/questions/50948581/access-to-outside-of-context-in-dockerfile
 services : 
   nginx:
-    build:
+    build: 
       context: .
       dockerfile: ./docker/nginx/Dockerfile
-    image: registry.gitlab.com/koleda/test-kube-deploy/nginx:1.0.1
+    image: registry.gitlab.com/koleda/test-kube-deploy/nginx:1.0.2
 
   php-fpm:
     build:
       context: .
       dockerfile: ./docker/php-fpm/Dockerfile
-    image: registry.gitlab.com/koleda/test-kube-deploy/php-fpm:1.0.1
+    image: registry.gitlab.com/koleda/test-kube-deploy/php-fpm:1.0.2
   
-  queue-worker:
-    build:
-      context: .
-      dockerfile: ./docker/queue-worker/Dockerfile
-    image: registry.gitlab.com/koleda/test-kube-deploy/queue-worker:1.0.0
+  # queue-worker:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/queue-worker/Dockerfile
+  #   image: registry.gitlab.com/koleda/test-kube-deploy/queue-worker:1.0.0
 
   mysql:
     build:
       context: .
       dockerfile: ./docker/mysql/Dockerfile
-    image: registry.gitlab.com/koleda/test-kube-deploy/mysql:1.0.0
+    image: registry.gitlab.com/koleda/test-kube-deploy/mysql:1.0.3

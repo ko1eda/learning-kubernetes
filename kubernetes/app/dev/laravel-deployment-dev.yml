@@ -2,21 +2,18 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: laravel-deployment-dev # each pod will be named this plus a hash
-  namespace: test
-  labels:
-    app: test-app
-    environment: development
+  namespace: test # this is replaced by deploy script
 spec:
   replicas: 2
   revisionHistoryLimit: 5
   selector:
     matchLabels:
-      app: test-app
+      app: laravel
       environment: development
   template:
     metadata:
       labels:
-        app: test-app
+        app: laravel
         environment: development
     spec:
       volumes: # create a hostPath volume to mount the shared app directory

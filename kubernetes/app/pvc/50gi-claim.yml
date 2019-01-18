@@ -1,11 +1,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
-# note presistent volume claims can belong to a namespace
-# but the volumes themselves are namespace agnosting just like nodes, they exist on the cluster
-# as a commidity to be consumed
 metadata:
   name: 50gi-do-pvc
-  namespace: test 
+  namespace: {{NAMESPACE}}
 spec:
   # the volume can only be used by a single node readwriteonce
   accessModes:

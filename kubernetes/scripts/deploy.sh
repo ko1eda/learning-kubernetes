@@ -1,14 +1,16 @@
 #! /bin/bash
 
+
 # prints the help menu using -h
 function help_menu() {
-    echo -e "By default this script will run any yaml file in the ./kubernetes/app directory that does not have a name of *-dev.yml \nYou can change this behavior by using the flags below:\n
+    echo -e "This script provides a convienient way to deploy and remove your application to the given namespace in your cluster.\nIt can be ran in either production (-p) or development (-d) mode.\nBelow are a list of the possible flags that can be passed into the script.\nAny of the flags can be combined with the -r flag to remove the resource specifed, \nfor example -rs removes all secrets for the given namepace or -rds removes all secrets and deletes the development cluster if you had created one.\nOptions:
         -n <namespace> : the namespace to create the resources under, you must pass one in even if its default
         -r : tells the script to remove all the resources created for a given flags p, s, d or any combination 
-        -s: tells the script to create all secretes for the given namespace
+        -s: tells the script to create all secrets for the given namespace
         -d : tells the script to run in development, i.e. only create or delete the resources in .kubernetes/app/dev
         -p : tells the script to run in production 
         -ra : this will delete the entire namespace and all resources in it
+        -t <account-name> : this will get the token for the given account in the given namespace (useful for quickly getting a dashboard token)
     "
 }
 
@@ -20,13 +22,15 @@ function handle_secrets() {
         then
             for secret in $secrets
             do
-                kubectl delete -f  $secret
+                cat $secret | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl delete -f -
             done
-            echo -e "Deleted secrets for namespace $namespace\n"
+            echo "Deleted secrets for namespace $namespace"
         else
           for secret in $secrets
             do
-                kubectl apply -f $secret
+                # this replaces any {{NAMESPACE}} variable with the namespace passed into the script
+                # https://stackoverflow.com/questions/48296082/how-to-set-dynamic-values-with-kubernetes-yaml-file
+                cat $secret | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl apply -f -
             done
             echo -e "Applied secrets for namespace $namespace\n"
             kubectl get secrets -n $namespace
@@ -43,13 +47,13 @@ function handle_dev() {
         then
             for resource in $resources
             do
-                kubectl delete -f $resource
+                cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl delete -f -
             done
-            echo -e "Deleted development resources for namespace $namespace\n"
+            echo "Deleted development resources for namespace $namespace"
         else
           for resource in $resources
             do
-               kubectl apply -f $resource
+               cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl apply -f -
             done
             echo -e "Applied development resources for namespace $namespace\n"
             kubectl get all -n $namespace
@@ -57,11 +61,61 @@ function handle_dev() {
     fi
 }
 
+
+# https://opensource.com/article/18/5/you-dont-know-bash-intro-bash-arrays
+function handle_prod() {
+    if [ -d ./kubernetes/app/pvc/ ]; then  pvc=./kubernetes/app/pvc/* ; fi
+    if [ -d ./kubernetes/app/svc/ ]; then  svc=./kubernetes/app/svc/* ; fi
+    if [ -d ./kubernetes/app/deployment/ ]; then dpl=./kubernetes/app/deployment/* ; fi
+    
+    # echo "$app" | sed -rn 's|(^[\w]+-(?:svc|service)\.yml$)|\1 \2/gm'
+   for resource in $pvc
+    do 
+        if [ "$rflag"  = true ]
+        then
+            cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl delete -f -
+        else
+            cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl apply -f -
+        fi
+    done        
+
+    for resource in $svc
+    do 
+        if [ "$rflag"  = true ]
+        then
+            cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl delete -f -
+        else
+            cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl apply -f -
+        fi
+    done    
+
+
+    for resource in $dpl
+    do 
+        if [ "$rflag"  = true ]
+        then
+            e cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl delete -f -
+        else
+            cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl apply -f -
+        fi
+    done    
+
+
+    # print the action taken
+    if [ "$rflag"  = true ]; 
+    then 
+        echo "Deleted production resources for namespace $namespace"; 
+    else
+        echo -e "Applied production resources for namespace $namespace\n"; 
+        kubectl get all -n $namespace
+    fi
+}
+
 # info on getopts https://archive.is/TRzn4#selection-1491.17-1513.72
 # info on mandatory flags https://stackoverflow.com/questions/11279423/bash-getopts-with-multiple-and-mandatory-options
 # bash functions https://ryanstutorials.net/bash-scripting-tutorial/bash-functions.php and subshells https://unix.stackexchange.com/questions/305358/do-functions-run-as-subprocesses-in-bash
 # info on switch statments https://www.thegeekstuff.com/2010/07/bash-case-statement
-while getopts ":n:drahsp" flag; do
+while getopts ":n:drahspt:" flag; do
     case $flag in
         n) 
             namespace=$OPTARG
@@ -80,7 +134,11 @@ while getopts ":n:drahsp" flag; do
         s)
             sflag=true
             ;;
-        s)
+        t) 
+            kubectl -n $namespace describe secret $(kubectl -n $namespace get secret | grep $OPTARG | awk '{print $1}')
+            exit 1
+            ;;
+        p)
             pflag=true
             ;;
         h)
@@ -117,70 +175,4 @@ if [ "$dflag" = true ]; then handle_dev; fi
 if [ "$sflag" = true ]; then handle_secrets ; fi
 
 # Cant use the handle_prod function because the order of svc and deployment creation matter but left it for refrence
-if [ "$pflag" = true ]
-then 
-    if [ "$rflag" = true ] 
-    then
-        kubectl delete -f ./kubernetes/app/pvc/50gi-claim.yml
-        kubectl delete -f ./kubernetes/app/laravel/laravel-svc.yml
-        kubectl delete -f ./kubernetes/app/laravel/laravel-deployment.yml
-        kubectl delete -f ./kubernetes/app/mysql/mysql-svc.yml
-        kubectl delete -f ./kubernetes/app/mysql/mysql-deployment.yml
-        echo -e  "Deleted production resources for namespace $namespace\n"; 
-    else 
-        kubectl apply -f ./kubernetes/app/pvc/50gi-claim.yml
-        kubectl apply -f ./kubernetes/app/laravel/laravel-svc.yml
-        kubectl apply -f ./kubernetes/app/laravel/laravel-deployment.yml
-        kubectl apply -f ./kubernetes/app/mysql/mysql-svc.yml
-        kubectl apply -f ./kubernetes/app/mysql/mysql-deployment.yml
-        echo -e "Applied production resources for namespace $namespace\n"
-        kubectl get all -n $namespace
-    fi
-fi
-
-
-# https://opensource.com/article/18/5/you-dont-know-bash-intro-bash-arrays
-# function handle_prod() {
-#     if [ -d ./kubernetes/app/laravel/ ]; then app=./kubernetes/app/laravel/* ; fi
-#     if [ -d ./kubernetes/app/mysql/ ]; then  db=./kubernetes/app/mysql/* ; fi
-#     if [ -d ./kubernetes/app/pvc/ ]; then  pvc=./kubernetes/app/pvc/* ; fi
-    
-#    for resource in $pvc
-#     do 
-#         if [ "$rflag"  = true ]
-#         then
-#             echo "delete $resource"
-#         else
-#             echo "add $resource"
-#         fi
-#     done        
-
-
-#     for resource in $app
-#     do 
-#         if [ "$rflag"  = true ]
-#         then
-#             echo "delete $resource"
-#         else
-#             echo "add $resource"
-#         fi
-#     done    
-
-#     for resource in $db
-#     do 
-#         if [ "$rflag"  = true ]
-#         then
-#             echo "delete $resource"
-#         else
-#             echo "add $resource"
-#         fi
-#     done    
-
-#     # print the action taken
-#     if [ "$rflag"  = true ]; 
-#     then 
-#         echo "Deleted production resources for namespace $namespace"; 
-#     else
-#         echo "Applied production resources for namespace $namespace"; 
-#     fi
-# }
+if [ "$pflag" = true ]; then handle_prod; fi

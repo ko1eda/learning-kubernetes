@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mysql
+    environment: production
+  name: mysql-svc
+  namespace: {{NAMESPACE}}
+spec: 
+  type: ClusterIP # not node port because we don't want to expose this to the outside world
+  ports: 
+  - port: 3306
+    name: mysql
+    protocol: TCP
+    targetPort: 3306
+  - port: 33060
+    name: heidisql
+    targetPort: 33060 # for heidi sql
+  selector:
+    app: mysql
+    environment: production

@@ -1,5 +1,7 @@
 <?php
 
+use App\User;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,5 +14,22 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return [
+        'name' => 'test :)'
+    ];
+});
+
+
+Route::get('/users', function () {
+    return User::all();
+});
+
+Route::get('/user', function () {
+    $user = new User();
+
+    $user->name = 'guy fieri';
+    $user->password = \Hash::make('secret');
+    $user->email = 'fake@fake.com';
+
+    $user->save();
 });
