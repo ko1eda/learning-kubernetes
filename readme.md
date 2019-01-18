@@ -1,7 +1,10 @@
 # Notes I took while setting up my first self-managed Kubernetes cluster
+> Note: I have included a deploy script in ./kubernetes/scripts that can be used to easily build and tear down your cluster based on the flags that you pass into it. Checkout the readme file in that directory.
+
 .
 .
 .
+
 ## Setting up Kubernetes on Digital Ocean using Kubeadm
 ## Requirements for kubeadm
 + One or more machines running a deb/rpm-compatible OS, for example Ubuntu or CentOS
@@ -141,9 +144,6 @@ https://www.ibm.com/support/knowledgecenter/en/linuxonibm/liaag/wkvm/wkvm_c_net_
 Iptables in linux
 + https://www.youtube.com/watch?v=XKfhOQWrUVw
 
-
-
----
 
 ## Digital Ocean useful info
 Powering off droplet from shell 
