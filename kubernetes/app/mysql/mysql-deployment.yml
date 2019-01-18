@@ -24,6 +24,8 @@ spec:
         app: mysql
         environment: development
     spec:
+      imagePullSecrets:
+        - name: gitlab-registry-key
       containers:
       - image: registry.gitlab.com/koleda/test-kube-deploy/mysql:1.0.0
         name: mysql
@@ -31,27 +33,34 @@ spec:
         ports:
           - containerPort: 3306
           - containerPort: 33060 # to connect w/heidi
+        livenessProbe:
+          tcpSocket:
+            port: 3306
       # Pull the environment variables for the container from our mysql-credentials
       env:
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-credentials
-              key: rootpw
-        - name: MYSQL_USER
-          valueFrom: 
-            secretKeyRef:
-              name: mysql-credentials
-              key: username
-        - name: MYSQL_PASSWORD
-          valueFrom: 
-            secretKeyRef:
-              name: mysql-credentials
-              key: pw
-        - name: MYSQL_DATABASE
-          valueFrom: 
-            secretKeyRef:
-              name: mysql-credentials
-              key: database
-      imagePullSecrets:
-        - name: gitlab-registry-key
+      - name: MYSQL_ROOT_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: mysql-credentials
+            key: rootpw
+      - name: MYSQL_USER
+        valueFrom: 
+          secretKeyRef:
+            name: mysql-credentials
+            key: username
+      - name: MYSQL_PASSWORD
+        valueFrom: 
+          secretKeyRef:
+            name: mysql-credentials
+            key: pw
+      - name: MYSQL_DATABASE
+        valueFrom: 
+          secretKeyRef:
+            name: mysql-credentials
+            key: database
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: 50gi-do-pvc
+    # - another volume to be shared with a container that backs up the database
+     
