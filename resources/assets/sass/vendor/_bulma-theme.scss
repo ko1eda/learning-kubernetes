@@ -1,0 +1,43 @@
+@import "~bulma/sass/utilities/initial-variables";
+@import "~bulma/sass/utilities/functions";
+
+
+// Custom themes here
+
+// $primary: #94A89A;
+$tablet: 768px;
+
+@import "~bulma/sass/utilities/derived-variables";
+
+
+$navbar-height: 4.5rem;
+$navbar-background-color: $white;
+
+$navbar-item-hover-background-color: transparent;
+$navbar-dropdown-arrow: $primary;
+$navbar-dropdown-item-hover-background-color: $primary;
+$navbar-dropdown-item-hover-color: $white;
+
+// forms
+$input-arrow: $primary;
+$label-weight: $weight-normal;
+
+// Pagination
+
+$pagination-current-background-color:$primary;
+$pagination-current-border-color: darken($primary, 5%);
+$pagination-active-border-color: darken($primary, 5%);
+
+$pagination-focus-border-color: $dark;
+
+// @import "~bulma/sass/utilities/animations";
+// @import "~bulma/sass/utilities/mixins";
+// @import "~bulma/sass/utilities/controls";
+
+// @import "~bulma/sass/components/navbar";
+// @import "~bulma/sass/elements/container";
+// @import "~bulma/sass/elements/box";
+// @import "~bulma/sass/elements/button";
+// @import "~bulma/sass/elements/form";
+
+
