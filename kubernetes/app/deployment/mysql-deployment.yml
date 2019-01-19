@@ -18,10 +18,16 @@ spec:
         app: mysql
         environment: production
     spec:
+      imagePullSecrets:
+      - name: gitlab-registry-key
       containers:
       - image: registry.gitlab.com/koleda/test-kube-deploy/mysql:1.0.3
         imagePullPolicy: Always
         name: mysql
+        # New disks come with a lost+found directory that typically kills mysql this passes a flag to the entrypoint script to tell mysql to ignore it
+        # See here https://github.com/docker-library/mysql/issues/186 https://dev.mysql.com/doc/refman/5.7/en/server-options.html#option_mysqld_ignore-db-dir
+        args:
+          - "--ignore-db-dir=lost+found"
         ports:
         - containerPort: 3306
           protocol: TCP
@@ -49,9 +55,12 @@ spec:
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
+      # This will ensure these pods have a high affinity for selecting nodes with a label of type=db
+      # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+      nodeSelector:
+        type: db
       volumes:
       - name: mysql-storage
-        emptyDir: {}
         persistentVolumeClaim:
           claimName: 50gi-do-pvc
      

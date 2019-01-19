@@ -67,17 +67,20 @@ function handle_prod() {
     if [ -d ./kubernetes/app/pvc/ ]; then  pvc=./kubernetes/app/pvc/* ; fi
     if [ -d ./kubernetes/app/svc/ ]; then  svc=./kubernetes/app/svc/* ; fi
     if [ -d ./kubernetes/app/deployment/ ]; then dpl=./kubernetes/app/deployment/* ; fi
-    
     # echo "$app" | sed -rn 's|(^[\w]+-(?:svc|service)\.yml$)|\1 \2/gm'
-   for resource in $pvc
+
+    for resource in $pvc
     do 
         if [ "$rflag"  = true ]
         then
             cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl delete -f -
         else
+            echo "Provisioing pvcs..."
             cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl apply -f -
+            sleep 6
         fi
     done        
+ 
 
     for resource in $svc
     do 
@@ -85,21 +88,25 @@ function handle_prod() {
         then
             cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl delete -f -
         else
+            echo "Provisioing svcs..."
             cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl apply -f -
+            sleep 2
         fi
     done    
-
-
+    
+ 
     for resource in $dpl
     do 
         if [ "$rflag"  = true ]
         then
-            e cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl delete -f -
+            cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl delete -f -
         else
+            echo "Deploying..."
             cat $resource | sed "s|{{NAMESPACE}}|$namespace|g" | kubectl apply -f -
+            sleep 2
         fi
     done    
-
+ 
 
     # print the action taken
     if [ "$rflag"  = true ]; 
@@ -115,7 +122,7 @@ function handle_prod() {
 # info on mandatory flags https://stackoverflow.com/questions/11279423/bash-getopts-with-multiple-and-mandatory-options
 # bash functions https://ryanstutorials.net/bash-scripting-tutorial/bash-functions.php and subshells https://unix.stackexchange.com/questions/305358/do-functions-run-as-subprocesses-in-bash
 # info on switch statments https://www.thegeekstuff.com/2010/07/bash-case-statement
-while getopts ":n:drahspt:" flag; do
+while getopts ":n:drahspt:x" flag; do
     case $flag in
         n) 
             namespace=$OPTARG
@@ -145,6 +152,9 @@ while getopts ":n:drahspt:" flag; do
             help_menu
             exit 1
             ;;
+        x) 
+            xflag=true 
+            ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
             exit 1
@@ -154,6 +164,10 @@ while getopts ":n:drahspt:" flag; do
             exit 1
     esac
 done
+
+# Set debug for the script
+# https://stackoverflow.com/questions/36273665/what-does-set-x-do/36273740
+if [ "$xflag" = 'true' ]; then set -x; fi
 
 # The namespace flag should be set 
 if [ ! "$nflag" ] 

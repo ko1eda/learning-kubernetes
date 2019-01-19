@@ -82,7 +82,9 @@ NOTE: apiVersion of ClusterRoleBinding resource may differ between Kubernetes ve
 + indepth info on what mount propegation https://medium.com/kokster/kubernetes-mount-propagation-5306c36a4a2d
 + Notes on how to edit the files https://github.com/kubernetes/kubernetes/issues/34915
 + https://stackoverflow.com/questions/50007654/how-does-kube-apiserver-restart-after-editing-etc-kubernetes-manifests-kube-api
-
+## Issues
+Currently digital oceans driver does not support attaching to existing PersistentVolumes
++ https://github.com/digitalocean/csi-digitalocean/issues/85
 
 ## Useful info about volumes
 To restrict and control the permissions for volumes as well as control the PID of a running contianer you can use securityContext objects
@@ -115,12 +117,21 @@ To restrict and control the permissions for volumes as well as control the PID o
 
 
 ## Setting up mysql with laravel 
+### Errors
 There seems to be an issue with the default container not allowing connections for the IP's of the node by defaut
 to change this I think you could allow connections from laravel-svc (and it should resolve to the IP address of the correct pods)
 ```
 SQLSTATE[HY000] [1045] Access denied for user 'test_user'@'10.244.1.175' (using password: YES) (SQL: select * from `users`)
 ```
-+ https://stackoverflow.com/questions/45650044/cant-connect-to-mysql-pod-in-kubernetes-when-using-secrets-for-password-access
+> Solution: This turned out to be an error with the the base64 encoded secrets, mysql was not reading from the environment variables, changed by using stringData https://stackoverflow.com/questions/45650044/cant-connect-to-mysql-pod-in-kubernetes-when-using-secrets-for-password-access
+
+Mysql cannot initialize if its storage directory already has files in it you can specifically disable this (because most ext4 disks have a lost+found directory by default)
+> Solution: https://github.com/docker-library/mysql/issues/186
+
+
+## Assigning Pods to specific nodes 
++ https://kubernetes.io/docs/concepts/configuration/assign-pod-node/ 
+
 
 
 ## Safely shutting down kube master
