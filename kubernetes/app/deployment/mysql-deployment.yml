@@ -55,11 +55,20 @@ spec:
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
-      # This will ensure these pods have a high affinity for selecting nodes with a label of type=db
+      # This will ensure these pods have a high affinity for selecting nodes with a label of type=db -- inclusive 
       # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
-      nodeSelector:
-        type: db
-      volumes:
+      # nodeSelector:
+      #   type: db
+      # Tolerations allow for tainting a node so that only pods with the specified toleration can be scheduled on it -- exclusive
+      # λ kubectl taint nodes node-2 type=db:NoSchedule
+      # λ kubectl taint nodes node-2 type- #this removes the taint, it is the same with labels 
+      # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+      tolerations:
+      - key: type
+        operator: "Equal"
+        value: db
+        effect: "NoSchedule"
+      volumes:  
       - name: mysql-storage
         persistentVolumeClaim:
           claimName: 50gi-do-pvc

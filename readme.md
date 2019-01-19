@@ -116,7 +116,7 @@ To restrict and control the permissions for volumes as well as control the PID o
 
 
 
-## Setting up mysql with laravel 
+## Setting up mysql
 ### Errors
 There seems to be an issue with the default container not allowing connections for the IP's of the node by defaut
 to change this I think you could allow connections from laravel-svc (and it should resolve to the IP address of the correct pods)
@@ -130,7 +130,15 @@ Mysql cannot initialize if its storage directory already has files in it you can
 
 
 ## Assigning Pods to specific nodes 
+Taints make it so that pods will avoid tainted nodes unless their toleration allows them to be scheduled on them, this is usefule if you want to restrict a certain node to only certain types of containers (like a database or something)
++ https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+Node selectors say that pods will be scheduled on nodes that match specific labels that you define 
 + https://kubernetes.io/docs/concepts/configuration/assign-pod-node/ 
+
+
+
+## Setting up a distributed redis cluster 
++ https://redis.io/topics/cluster-tutorial
 
 
 
