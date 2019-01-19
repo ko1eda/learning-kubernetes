@@ -174,6 +174,18 @@ Iptables in linux
 + https://www.youtube.com/watch?v=XKfhOQWrUVw
 
 
+## Git subtrees (Easier alternative to gitsubmodules)
+I used a gitsubtree to clone the 1upforum repository into this project
+
+``` git subtree add --prefix=1up-forum git@github.com:ko1eda/levelup-forum.git development --squash ``` 
+
+Note that --squash is to remove all the history which we don't need here 
+
++ Documentation (hasn't been added to official git docs yet for some reason) https://github.com/git/git/blob/master/contrib/subtree/git-subtree.txt 
+Subtrees vs submodules and why subtrees are useful
++ https://stackoverflow.com/questions/32407634/when-to-use-git-subtree
+
+
 ## Digital Ocean useful info
 Powering off droplet from shell 
 
