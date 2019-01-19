@@ -1,0 +1,32 @@
+@import "../vendor/_bulma-theme.scss";
+
+.lu-pannel {
+ 
+  @apply .tw-flex .tw-flex-col .tw-w-full .tw-shadow-md .tw-rounded .tw-bg-white ;
+ 
+  &-header {
+    @apply .tw-px-4 .tw-py-2 ;
+  }
+  &-body {
+    @screen sm {
+      @apply .tw-text-base ;
+    }
+    @apply .tw-pb-2 .tw-px-4 .tw-text-sm ;
+  }
+
+  &-text {
+    @screen sm {
+      @apply .tw-text-base ;
+    }
+
+    @apply .tw-mb-2 .tw-text-sm ;
+  }
+
+  & hr {
+    @apply .tw-mb-0 .tw-mt-0 ;
+  }
+  & hr:last-of-type {
+    display:none;
+  }
+}
+
