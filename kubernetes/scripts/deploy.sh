@@ -2,7 +2,7 @@
 
 
 # prints the help menu using -h
-function help_menu() {
+function usage() {
     echo -e "This script provides a convienient way to deploy and remove your application to the given namespace in your cluster.\nIt can be ran in either production (-p) or development (-d) mode.\nBelow are a list of the possible flags that can be passed into the script.\nAny of the flags can be combined with the -r flag to remove the resource specifed, \nfor example -rs removes all secrets for the given namepace or -rds removes all secrets and deletes the development cluster if you had created one.\nOptions:
         -n <namespace> : the namespace to create the resources under, you must pass one in even if its default
         -r : tells the script to remove all the resources created for a given flags p, s, d or any combination 
@@ -143,14 +143,14 @@ while getopts ":n:drahspt:x" flag; do
             ;;
         t) 
             kubectl -n $namespace describe secret $(kubectl -n $namespace get secret | grep $OPTARG | awk '{print $1}')
-            exit 1
+            exit 0
             ;;
         p)
             pflag=true
-            ;;
+            ;;  
         h)
-            help_menu
-            exit 1
+            usage
+            exit 0
             ;;
         x) 
             xflag=true 
@@ -173,14 +173,14 @@ if [ "$xflag" = 'true' ]; then set -x; fi
 if [ ! "$nflag" ] 
 then
     echo "-n must be set, even if its set to default"
-    exit 1 
+    exit 1
 fi
 
 # Delete all resources under the passed in namespace with -ra
 if [ "$aflag" = true ] && [ "$rflag" = true ]
 then
     kubectl delete namespace $namespace 
-    exit 1 
+    exit 0 
 fi
 
 # Main logic 
