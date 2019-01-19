@@ -33,3 +33,12 @@ spec:
         imagePullPolicy: Always
         ports:
           - containerPort: 9000
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - backend

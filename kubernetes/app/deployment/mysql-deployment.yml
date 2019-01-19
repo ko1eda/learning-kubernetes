@@ -12,6 +12,8 @@ spec:
     matchLabels:
       app: mysql
       environment: production
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -31,6 +33,12 @@ spec:
         ports:
         - containerPort: 3306
           protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          failureThreshold: 2 # the number of failures it will allow before restarting 
         env:
         - name: "MYSQL_ROOT_PASSWORD"
           valueFrom:
@@ -57,17 +65,25 @@ spec:
           mountPath: /var/lib/mysql
       # This will ensure these pods have a high affinity for selecting nodes with a label of type=db -- inclusive 
       # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
-      # nodeSelector:
-      #   type: db
-      # Tolerations allow for tainting a node so that only pods with the specified toleration can be scheduled on it -- exclusive
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - db
+      # Tolerations allow for tainting a node so that only pods with the specified toleration can be scheduled on it but this does not garuntee it will be -- exclusive
       # λ kubectl taint nodes node-2 type=db:NoSchedule
       # λ kubectl taint nodes node-2 type- #this removes the taint, it is the same with labels 
       # https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
-      tolerations:
-      - key: type
-        operator: "Equal"
-        value: db
-        effect: "NoSchedule"
+      # tolerations:
+      # - key: type
+      #   operator: "Equal"
+      #   value: db
+      #   effect: "NoSchedule"
       volumes:  
       - name: mysql-storage
         persistentVolumeClaim:

@@ -128,17 +128,34 @@ SQLSTATE[HY000] [1045] Access denied for user 'test_user'@'10.244.1.175' (using 
 Mysql cannot initialize if its storage directory already has files in it you can specifically disable this (because most ext4 disks have a lost+found directory by default)
 > Solution: https://github.com/docker-library/mysql/issues/186
 
++ Distributed mysql containers and stateful sets https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
+
 
 ## Assigning Pods to specific nodes 
-Taints make it so that pods will avoid tainted nodes unless their toleration allows them to be scheduled on them, this is usefule if you want to restrict a certain node to only certain types of containers (like a database or something)
+Taints make it so that pods will avoid tainted nodes unless their toleration allows them to be scheduled on them, this is usefule if you want to restrict a certain node to only certain types of containers (like a database or something) however it does not garuntee the node will actutally be scheduled on it 
 + https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 Node selectors say that pods will be scheduled on nodes that match specific labels that you define 
 + https://kubernetes.io/docs/concepts/configuration/assign-pod-node/ 
++ Indepth explanations https://banzaicloud.com/blog/k8s-taints-tolerations-affinities/ , https://docs.openshift.com/container-platform/3.6/admin_guide/scheduling/pod_affinity.html
 
 
 
 ## Setting up a distributed redis cluster 
 + https://redis.io/topics/cluster-tutorial
+
+
+## Redeploying pods from failed nodes 
+By default pods stay around until the are deleted by a controller or a human, if a pod is not deleted it is not rescheduled to avoid clashes more info here
++ https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+Note that stateful sets need to fully terminate before they can be rescheduled 
++ disruption budgets are useful to help mitigate mostly planned disruptions https://kubernetes.io/docs/tasks/run-application/configure-pdb/
++ Kubernetes, termination, and termination hooks https://cloud.google.com/blog/products/gcp/kubernetes-best-practices-terminating-with-grace
+### Issues with termination 
+#### Stateful Sets
+Stateful sets by design are not ment to be rescheduled on other nodes, this because they are supposed to maintain state, if a node is taken down it will remain in a terminating state until the node comes backup or it is forecfully deleted see https://blog.thecodeteam.com/2017/08/16/technical-dive-statefulsets-deployments-kubernetes/
+### Other
++ https://stackoverflow.com/questions/42733478/kubernetes-not-scheduling-failed-pod-on-other-node
++ Issue about Multi-Attach error for volume taking way too long to self-heal https://github.com/kubernetes/kubernetes/issues/53059
 
 
 
